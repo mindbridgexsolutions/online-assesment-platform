@@ -1,20 +1,22 @@
 # ---------------------------------------------------------------------------
-# Base configuration (strict / production-safe defaults).
-# Secrets MUST come from the environment: DB_PASSWORD, APP_JWT_SECRET.
-# For local development activate the "dev" profile (see application-dev.yml).
+# Base configuration
+# Production secrets must be supplied through environment variables.
 # ---------------------------------------------------------------------------
+
 spring:
   application:
     name: assessment-platform
+
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/assessment}
-    username: ${DB_USERNAME:assess}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:30}
       minimum-idle: 5
       connection-timeout: 10000
       max-lifetime: 1500000
+
   jpa:
     open-in-view: false
     hibernate:
@@ -27,20 +29,25 @@ spring:
         default_batch_fetch_size: 50
         order_inserts: true
         order_updates: true
+
   flyway:
     enabled: true
     locations: classpath:db/migration
+
   mvc:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+
   servlet:
     multipart:
       max-file-size: 11MB
       max-request-size: 12MB
+
   jackson:
     time-zone: UTC
     default-property-inclusion: non_null
+
   cache:
     type: caffeine
     caffeine:
@@ -48,22 +55,24 @@ spring:
 
 server:
   port: ${PORT:8080}
-  # "native" lets Tomcat's RemoteIpValve resolve the real client IP / scheme from X-Forwarded-* headers sent by
-  # a trusted (private-range) reverse proxy. The IP allow-list and login rate limiter depend on this.
   forward-headers-strategy: native
   shutdown: graceful
+
   servlet:
     session:
       tracking-modes: cookie
       cookie:
         http-only: true
         same-site: strict
+
   error:
     whitelabel:
       enabled: false
+
   compression:
     enabled: true
     mime-types: text/html,text/css,application/javascript,application/json
+
   tomcat:
     max-http-form-post-size: 4MB
     threads:
@@ -74,45 +83,65 @@ management:
     web:
       exposure:
         include: health,info
+
   endpoint:
     health:
       probes:
         enabled: true
       show-details: never
 
+# ---------------------------------------------------------------------------
+# LOGGING
+# ---------------------------------------------------------------------------
+
 logging:
   level:
     root: INFO
-    com.mindbridgex: INFO
+    com.mindbridgex: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: DEBUG
+    org.springframework.security.authentication: DEBUG
+    org.springframework.web: INFO
+    org.springframework.web.servlet: INFO
+
+# ---------------------------------------------------------------------------
+# APPLICATION CONFIGURATION
+# ---------------------------------------------------------------------------
 
 app:
   timezone: ${APP_TIMEZONE:Asia/Kolkata}
   approval-required: ${APPROVAL_REQUIRED:true}
+
   jwt:
-    secret: ${APP_JWT_SECRET:12mynameisdeepaksinghimaengineer}
+    secret: ${APP_JWT_SECRET}
     issuer: mindbridgex-assessment
     access-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:20}
     refresh-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
+
   cookie:
-    secure: ${COOKIE_SECURE:true}
+    # TEMPORARY HTTP TESTING ONLY. Set true after enabling HTTPS.
+    secure: ${COOKIE_SECURE:false}
     same-site: Strict
+
   attempts:
     grace-seconds: ${ATTEMPT_GRACE_SECONDS:10}
     auto-submit-interval-ms: ${AUTOSUBMIT_INTERVAL_MS:15000}
     max-autosubmit-batch: 500
+
   storage:
     dir: ${STORAGE_DIR:./data/uploads}
     max-image-bytes: 2097152
     max-document-bytes: 10485760
-    # longest side of an uploaded picture, in pixels (guards against decompression bombs and unusable diagrams)
     max-image-dimension: ${MAX_IMAGE_DIMENSION:6000}
+
   login:
     max-failed-attempts: 5
     lock-minutes: 15
     window-minutes: 15
-    # Exam labs often share one public IP (NAT), so this must be generous; per-user lockout is the real protection.
     max-per-ip: ${LOGIN_MAX_FAILURES_PER_IP:1000}
     max-per-user: 10
+
   seed:
     admin-username: ${ADMIN_USERNAME:admin}
     admin-email: ${ADMIN_EMAIL:admin@example.com}

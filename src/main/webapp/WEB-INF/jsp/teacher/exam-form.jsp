@@ -50,8 +50,8 @@
                         <input class="form-check-input" type="checkbox" role="switch" id="negativeMarking" name="negativeMarking" value="true" data-toggle-target="#neg-box" ${form.negativeMarking ? 'checked' : ''} ${locked ? 'disabled' : ''}>
                         <input type="hidden" name="_negativeMarking" value="on">
                         <label class="form-check-label" for="negativeMarking">Negative marking</label></div>
-                    <div id="neg-box" class="mb-3 d-none"><label class="form-label" for="negativeFraction">Deduct this fraction of a question's marks for a wrong answer</label>
-                        <input class="form-control" type="number" step="0.05" min="0" max="1" id="negativeFraction" name="negativeFraction" value="<c:out value='${form.negativeFraction}'/>" ${locked ? 'readonly' : ''}></div>
+                    <div id="neg-box" class="mb-3 d-none"><label class="form-label" for="negativeFraction">Deduct this fraction of a question's marks for a wrong answer (default 0.33, which is &minus;0.5 on a 1.5-mark question)</label>
+                        <input class="form-control" type="number" step="0.01" min="0" max="1" id="negativeFraction" name="negativeFraction" value="<c:out value='${form.negativeFraction}'/>" ${locked ? 'readonly' : ''}></div>
                     <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" role="switch" id="shuffleQuestions" name="shuffleQuestions" value="true" ${form.shuffleQuestions ? 'checked' : ''} ${locked ? 'disabled' : ''}>
                         <input type="hidden" name="_shuffleQuestions" value="on"><label class="form-check-label" for="shuffleQuestions">Shuffle questions</label></div>
                     <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="shuffleOptions" name="shuffleOptions" value="true" ${form.shuffleOptions ? 'checked' : ''} ${locked ? 'disabled' : ''}>

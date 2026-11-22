@@ -18,10 +18,10 @@
         <div class="col-lg-6"><div class="card h-100"><div class="card-body">
             <h2 class="h5">Template rules</h2>
             <ul class="small mb-0">
-                <li>One table, one row per question: <code>Q No | Question | Option A | Option B | Option C | Option D | Correct | Marks | CO | Difficulty</code>.</li>
+                <li>One table, one row per question: <code>Q No | Question | Option A | Option B | Option C | Option D | Correct | Marks | CO | Bloom's</code>.</li>
                 <li>The question and every option can be text, a picture, or both (just use Insert &gt; Picture in Word).</li>
                 <li><strong>Correct</strong> is a letter, e.g. <code>B</code>; several letters (<code>A,C</code>) make a multiple-answer question.</li>
-                <li>Marks, CO and Difficulty are optional. CO must be a Course Outcome code defined for the subject.</li>
+                <li><strong>CO</strong> is a number from 1 to 10 (1 means CO1) and must be a Course Outcome defined for the subject. <strong>Bloom's</strong> is a number from 1 to 6 (1 Remember, 2 Understand, 3 Apply, 4 Analyze, 5 Evaluate, 6 Create). Marks are optional.</li>
                 <li>Rows with a problem are listed with the row number and reason; the good rows still go through. Duplicates are flagged and you choose to skip or keep them.</li>
             </ul>
         </div></div></div>

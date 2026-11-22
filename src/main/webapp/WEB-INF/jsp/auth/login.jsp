@@ -35,7 +35,7 @@
                     </form>
                 </div>
             </div>
-            <p class="text-center text-muted small mt-3">Forgot your password? Ask your administrator to reset it.</p>
+            <p class="text-center text-muted small mt-3"><a href="<c:url value='/forgot-password'/>">Forgot your password?</a></p>
         </div>
     </div>
 </t:layout>

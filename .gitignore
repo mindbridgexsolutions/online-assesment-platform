@@ -12,3 +12,6 @@ data/
 /assessment/
 /version2/
 ziNC3AJM
+
+# local config backups (may contain credentials)
+*.ymlbkp

@@ -16,15 +16,26 @@
                 <div class="mb-3"><label class="form-label" for="name">Name</label>
                     <input class="form-control" id="name" name="name" value="<c:out value='${form.name}'/>" required maxlength="120"></div>
                 <div class="mb-3"><label class="form-label" for="code">Code</label>
-                    <input class="form-control" id="code" name="code" value="<c:out value='${form.code}'/>" required maxlength="40" pattern="[A-Za-z0-9._-]{2,40}"></div>
+                    <input class="form-control" id="code" name="code" value="<c:out value='${form.code}'/>" required maxlength="40"></div>
                 <div class="mb-3">
                     <label class="form-label d-block">Teachers who can manage this subject's question bank and exams</label>
+                    <c:if test="${not empty teachers}">
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                            <input type="search" class="form-control form-control-sm" style="max-width:300px" placeholder="Search teachers by name or username" data-filter-list="#teacherList" autocomplete="off" aria-label="Search teachers">
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-check-all="#teacherList">Select all</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-check-none="#teacherList">Clear</button>
+                            <span class="small text-muted" data-check-count="#teacherList"></span>
+                        </div>
+                    </c:if>
+                    <div id="teacherList" data-check-list class="border rounded p-2" style="max-height:340px;overflow:auto">
                     <c:forEach items="${teachers}" var="t">
-                        <div class="form-check">
+                        <div class="form-check" data-search="<c:out value='${t.fullName} ${t.username}'/>">
                             <input class="form-check-input" type="checkbox" name="teacherIds" id="t_${t.id}" value="${t.id}" ${form.teacherIds.contains(t.id) ? 'checked' : ''}>
                             <label class="form-check-label" for="t_${t.id}"><c:out value="${t.fullName}"/> <span class="text-muted small">(<c:out value="${t.username}"/>)</span></label>
                         </div>
                     </c:forEach>
+                    <div class="text-muted small d-none" data-no-match>No teacher matches your search.</div>
+                    </div>
                     <c:if test="${empty teachers}"><div class="text-muted small">No active teachers yet. Create users with the Teacher role first.</div></c:if>
                 </div>
                 <div class="form-check form-switch mb-4">

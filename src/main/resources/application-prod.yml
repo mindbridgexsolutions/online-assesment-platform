@@ -1,6 +1,14 @@
-# Production profile: secrets are never defaulted. Startup fails fast if they are missing.
+# Production profile
+# Keep security diagnostics enabled temporarily while investigating the 403.
+# Reduce these levels after diagnosis.
+
 logging:
   level:
-    root: WARN
-    com.mindbridgex: INFO
-    org.springframework.security: WARN
+    root: INFO
+    com.mindbridgex: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: DEBUG
+    org.springframework.security.authentication: DEBUG
+    org.springframework.web: INFO
+    org.springframework.web.servlet: INFO

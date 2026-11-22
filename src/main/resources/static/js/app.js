@@ -140,3 +140,42 @@ document.addEventListener('change', function (e) {
     var el = e.target.closest ? e.target.closest('[data-autosubmit]') : null;
     if (el && el.form) { el.form.submit(); }
 });
+
+/* Checkbox lists with search and "select all": <input data-filter-list="#list">, <button data-check-all="#list">, <button data-check-none="#list">,
+   <span data-check-count="#list">. Select all / clear apply to the rows that match the search. */
+(function () {
+    'use strict';
+    function rows(list) { return Array.prototype.slice.call(list.querySelectorAll('[data-search]')); }
+    function visibleBoxes(list) {
+        return rows(list).filter(function (r) { return !r.classList.contains('d-none'); })
+            .map(function (r) { return r.querySelector('input[type=checkbox]'); }).filter(Boolean);
+    }
+    function count(list) {
+        var n = list.querySelectorAll('input[type=checkbox]:checked').length;
+        document.querySelectorAll('[data-check-count="#' + list.id + '"]').forEach(function (el) { el.textContent = n + ' selected'; });
+    }
+    document.addEventListener('input', function (e) {
+        var box = e.target.closest ? e.target.closest('[data-filter-list]') : null;
+        if (!box) { return; }
+        var list = document.querySelector(box.getAttribute('data-filter-list'));
+        if (!list) { return; }
+        var q = box.value.trim().toLowerCase();
+        rows(list).forEach(function (r) { r.classList.toggle('d-none', q !== '' && r.getAttribute('data-search').toLowerCase().indexOf(q) < 0); });
+        var none = list.querySelector('[data-no-match]');
+        if (none) { none.classList.toggle('d-none', visibleBoxes(list).length > 0); }
+    });
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('[data-check-all],[data-check-none]') : null;
+        if (!btn) { return; }
+        var all = btn.hasAttribute('data-check-all');
+        var list = document.querySelector(btn.getAttribute(all ? 'data-check-all' : 'data-check-none'));
+        if (!list) { return; }
+        visibleBoxes(list).forEach(function (cb) { cb.checked = all; });
+        count(list);
+    });
+    document.addEventListener('change', function (e) {
+        var list = e.target.closest ? e.target.closest('[data-check-list]') : null;
+        if (list) { count(list); }
+    });
+    document.querySelectorAll('[data-check-list]').forEach(count);
+})();

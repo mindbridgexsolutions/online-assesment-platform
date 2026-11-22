@@ -26,7 +26,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Sign-in details of the new accounts</span>
                 <span class="d-flex gap-2 no-print">
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-csv-from="#credTable" data-csv-name="student-credentials.csv">Download CSV</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-csv-from="#credTable" data-csv-name="credentials.csv">Download CSV</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-print>Print</button>
                 </span>
             </div>
