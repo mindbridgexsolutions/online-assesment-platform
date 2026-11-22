@@ -89,7 +89,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR, DispatcherType.INCLUDE)
                         .permitAll()
-                        .requestMatchers("/login", "/auth/login", "/auth/refresh", "/error",
+                        .requestMatchers("/login", "/auth/login", "/auth/refresh", "/forgot-password", "/error",
                                 "/webjars/**", "/css/**", "/js/**", "/img/**", "/favicon.ico",
                                 "/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/super/**").hasRole("SUPER_ADMIN")

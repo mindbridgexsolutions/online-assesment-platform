@@ -368,13 +368,13 @@ public class ExamUploadService {
             return "Course Outcome \"" + it.co() + "\" is not defined for this subject.";
         }
         if ((it.co() == null || it.co().isBlank()) && copo.hasCos(subjectId)) {
-            return "The CO column is empty. Every question must be tagged with a Course Outcome (for example CO1).";
+            return "The CO column is empty. Every question must be tagged with a Course Outcome (a number from 1 to 10, for example 1 for CO1).";
         }
         if (it.bloom() != null && !it.bloom().isBlank()) {
             try {
                 com.mindbridgex.assessment.domain.Bloom.parse(it.bloom());
             } catch (IllegalArgumentException ex) {
-                return "Bloom's level must be Remember, Understand, Apply, Analyze, Evaluate or Create.";
+                return "Bloom's level must be a number from 1 to 6 (1 Remember, 2 Understand, 3 Apply, 4 Analyze, 5 Evaluate, 6 Create) or the level name.";
             }
         }
         return null;

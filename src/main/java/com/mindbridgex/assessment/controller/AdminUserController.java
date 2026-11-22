@@ -40,6 +40,7 @@ public class AdminUserController {
     private static final int PAGE_SIZE = 20;
     private final UserService userService;
     private final UserImportService importService;
+    private final com.mindbridgex.assessment.service.PasswordResetRequestService resetRequestService;
     private final BatchService batchService;
 
     @GetMapping
@@ -161,6 +162,12 @@ public class AdminUserController {
         return "redirect:/admin/users";
     }
 
+    @GetMapping("/reset-requests")
+    public String resetRequests(Model model) {
+        model.addAttribute("requests", resetRequestService.open());
+        return "admin/reset-requests";
+    }
+
     // ---------- bulk upload ----------
     @GetMapping("/import")
     public String importForm(Model model) {
@@ -170,9 +177,9 @@ public class AdminUserController {
     }
 
     @PostMapping("/import")
-    public String importUsers(@RequestParam("file") MultipartFile file, @RequestParam(required = false) Long batchId, Model model) {
+    public String importUsers(@RequestParam("file") MultipartFile file, @RequestParam(required = false) Long batchId, @RequestParam(defaultValue = "STUDENT") String role, Model model) {
         try {
-            model.addAttribute("result", importService.importStudents(file, batchId));
+            model.addAttribute("result", importService.importUsers(file, batchId, "TEACHER".equalsIgnoreCase(role) ? com.mindbridgex.assessment.domain.RoleType.TEACHER : com.mindbridgex.assessment.domain.RoleType.STUDENT));
             return "admin/user-import-result";
         } catch (AppException e) {
             model.addAttribute("error", e.getMessage());
@@ -183,12 +190,17 @@ public class AdminUserController {
     }
 
     @GetMapping("/import/template")
-    public ResponseEntity<byte[]> template() {
+    public ResponseEntity<byte[]> template(@RequestParam(defaultValue = "STUDENT") String role) {
+        if ("TEACHER".equalsIgnoreCase(role)) {
+            String t = "username,full_name,email,phone,password\r\n" + "meera.joshi,Meera Joshi,meera.joshi@example.com,9876543210,\r\n" + "suresh.rao,Suresh Rao,suresh.rao@example.com,,\r\n";
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("teachers-template.csv").build().toString()).contentType(new MediaType("text", "csv", StandardCharsets.UTF_8)).body(t.getBytes(StandardCharsets.UTF_8));
+        }
         String csv = "username,full_name,email,roll_no,phone,password,batch_code\r\n" + "asha.patil,Asha Patil,asha.patil@example.com,2024-001,9876543210,,\r\n" + "ravi.kumar,Ravi Kumar,ravi.kumar@example.com,2024-002,,,\r\n";
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("students-template.csv").build().toString()).contentType(new MediaType("text", "csv", StandardCharsets.UTF_8)).body(csv.getBytes(StandardCharsets.UTF_8));
     }
 
-    public AdminUserController(final UserService userService, final UserImportService importService, final BatchService batchService) {
+    public AdminUserController(final UserService userService, final UserImportService importService, final BatchService batchService, final com.mindbridgex.assessment.service.PasswordResetRequestService resetRequestService) {
+        this.resetRequestService = resetRequestService;
         this.userService = userService;
         this.importService = importService;
         this.batchService = batchService;

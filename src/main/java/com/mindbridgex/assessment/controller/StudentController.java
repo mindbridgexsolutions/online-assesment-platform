@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
     private final StudentService studentService;
     private final AttemptService attemptService;
+    private final JdbcClient jdbc;
 
     @GetMapping
     public String dashboard(@AuthenticationPrincipal AuthUser user, Model model) {
@@ -30,7 +32,30 @@ public class StudentController {
 
     @GetMapping("/exams/{id}")
     public String instructions(@AuthenticationPrincipal AuthUser user, @PathVariable Long id, Model model) {
-        model.addAttribute("card", studentService.card(user, id));
+        StudentService.ExamCard card = studentService.card(user, id);
+        model.addAttribute("card", card);
+        // Facts for the standard instructions: number of questions and the marks per question when they are all the same.
+        jdbc.sql("select count(*) n, count(distinct marks) d, min(marks) m from exam_questions where exam_id = :e").param("e", id).query((rs, i) -> {
+            if (rs.getInt("n") > 0) {
+                model.addAttribute("questionCount", rs.getInt("n"));
+                if (rs.getInt("d") == 1) {
+                    model.addAttribute("marksEach", rs.getBigDecimal("m").stripTrailingZeros().toPlainString());
+                    model.addAttribute("negativeEach", rs.getBigDecimal("m").multiply(card.exam().getNegativeFraction()).setScale(2, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString());
+                }
+            }
+            return 0;
+        }).single();
+        // The teacher's own text is shown too, but lines that repeat a standard instruction are left out.
+        String custom = card.exam().getInstructions();
+        if (custom != null && !custom.isBlank()) {
+            java.util.List<String> keep = new java.util.ArrayList<>();
+            for (String line : custom.split("\\R")) {
+                if (!line.isBlank() && !line.toLowerCase(java.util.Locale.ROOT).matches(".*(negative mark|wrong answer|incorrect answer|unanswered|internal choice|compulsory|each question carries|calculator|mark only one).*")) {
+                    keep.add(line.trim());
+                }
+            }
+            model.addAttribute("customInstructions", keep);
+        }
         return "student/instructions";
     }
 
@@ -84,7 +109,8 @@ public class StudentController {
         }
     }
 
-    public StudentController(final StudentService studentService, final AttemptService attemptService) {
+    public StudentController(final StudentService studentService, final AttemptService attemptService, final JdbcClient jdbc) {
+        this.jdbc = jdbc;
         this.studentService = studentService;
         this.attemptService = attemptService;
     }

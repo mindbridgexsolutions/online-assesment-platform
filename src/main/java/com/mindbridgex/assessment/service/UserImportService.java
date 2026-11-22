@@ -58,6 +58,18 @@ public class UserImportService {
     private final TransactionTemplate tx;
 
     public ImportResult importStudents(MultipartFile file, Long defaultBatchId) {
+        return importUsers(file, defaultBatchId, RoleType.STUDENT);
+    }
+
+    /** Bulk upload of students (batch columns apply) or teachers (same file format; roll_no and batch are ignored). */
+    public ImportResult importUsers(MultipartFile file, Long defaultBatchId, RoleType role) {
+        if (role != RoleType.STUDENT && role != RoleType.TEACHER) {
+            throw AppException.bad("Bulk upload is available for students and teachers only.");
+        }
+        final boolean student = role == RoleType.STUDENT;
+        if (!student) {
+            defaultBatchId = null;
+        }
         if (file == null || file.isEmpty()) {
             throw AppException.bad("Choose a CSV or Excel (.xlsx) file to upload.");
         }
@@ -78,10 +90,10 @@ public class UserImportService {
             String username = clean(first(r, "username", "user_name", "login"));
             String fullName = clean(first(r, "full_name", "fullname", "name", "student_name"));
             String email = clean(first(r, "email", "e-mail", "mail"));
-            String rollNo = clean(first(r, "roll_no", "rollno", "roll", "roll_number"));
+            String rollNo = student ? clean(first(r, "roll_no", "rollno", "roll", "roll_number")) : null;
             String phone = clean(first(r, "phone", "mobile", "contact"));
             String pwd = first(r, "password", "pwd");
-            String batchCode = clean(first(r, "batch_code", "batch", "batchcode"));
+            String batchCode = student ? clean(first(r, "batch_code", "batch", "batchcode")) : null;
             String err = validate(username, fullName, email, seenUsernames, seenEmails);
             if (err == null && pwd != null && !pwd.isBlank()) {
                 err = PasswordPolicy.validate(pwd);
@@ -132,7 +144,7 @@ public class UserImportService {
                     u.setPhone(c.phone());
                     u.setPasswordHash(hashes[i]);
                     u.setMustChangePassword(true);
-                    u.setRoles(EnumSet.of(RoleType.STUDENT));
+                    u.setRoles(EnumSet.of(role));
                     users.save(u);
                     created.add(new Credential(c.username(), c.fullName(), c.password(), c.generated()));
                     Batch target = c.batchCode() != null ? batchByCode.get(c.batchCode().toLowerCase(Locale.ROOT)) : defaultBatch;
@@ -149,7 +161,7 @@ public class UserImportService {
         }));
         lookup.evictAll();
         errors.sort((a, b) -> Integer.compare(a.row(), b.row()));
-        audit.log("USERS_IMPORTED", "User", null, created.size() + " created, " + errors.size() + " rejected");
+        audit.log("USERS_IMPORTED", "User", null, role + ": " + created.size() + " created, " + errors.size() + " rejected");
         return new ImportResult(created, errors, rows.size());
     }
 

@@ -191,8 +191,20 @@ public class DocxQuestionParser {
     }
 
     // ------------------------------------------------------------------ template
-    /** A ready-to-fill template with instructions and three sample rows (one with a picture). */
+    /** The college question-paper template (NPTEL ESE format): header table, instructions, the question table (CO 1-10, Bloom's 1-6) and chart placeholders. */
     public byte[] template() {
+        try (InputStream in = DocxQuestionParser.class.getResourceAsStream("/docx/question-paper-template.docx")) {
+            if (in != null) {
+                return in.readAllBytes();
+            }
+        } catch (IOException e) {
+            // fall back to the generated template below
+        }
+        return basicTemplate();
+    }
+
+    /** Fallback template with instructions and three sample rows (used only if the bundled template file is missing). */
+    private byte[] basicTemplate() {
         try (XWPFDocument doc = new XWPFDocument(); java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
             XWPFRun title = doc.createParagraph().createRun();
             title.setBold(true);

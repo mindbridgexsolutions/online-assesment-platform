@@ -48,6 +48,8 @@ public class TeacherExamController {
         java.time.LocalDateTime t = java.time.LocalDateTime.now().plusDays(1).withMinute(0).withSecond(0).withNano(0);
         f.setStartAt(t);
         f.setEndAt(t.plusHours(3));
+        f.setNegativeMarking(true);                              // default: negative marking on ...
+        f.setNegativeFraction(new java.math.BigDecimal("0.33")); // ... one third of the marks, i.e. -0.5 on a 1.5-mark question; the teacher can change it
         prepare(user, f, model);
         return "teacher/exam-form";
     }

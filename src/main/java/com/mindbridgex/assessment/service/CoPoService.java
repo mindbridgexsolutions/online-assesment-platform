@@ -168,7 +168,15 @@ public class CoPoService {
         if (code == null || code.isBlank()) {
             return null;
         }
-        return jdbc.sql("select id from course_outcomes where subject_id = :s and lower(code) = lower(:c)").param("s", subjectId).param("c", code.trim())
+        Long id = byCode(subjectId, code.trim());
+        if (id == null && code.trim().matches("[0-9]{1,2}")) { // the paper template writes CO as a plain number, e.g. 3 means CO3
+            id = byCode(subjectId, "CO" + Integer.parseInt(code.trim()));
+        }
+        return id;
+    }
+
+    private Long byCode(Long subjectId, String code) {
+        return jdbc.sql("select id from course_outcomes where subject_id = :s and lower(code) = lower(:c)").param("s", subjectId).param("c", code)
                 .query(Long.class).optional().orElse(null);
     }
 

@@ -18,6 +18,10 @@ public enum Bloom {
         if (s == null || s.isBlank()) {
             return null;
         }
+        String t = s.trim();
+        if (t.matches("[1-6]")) { // the paper template uses 1 = Remember ... 6 = Create
+            return values()[Integer.parseInt(t) - 1];
+        }
         for (Bloom b : values()) {
             if (b.name().equalsIgnoreCase(s.trim()) || b.label.equalsIgnoreCase(s.trim())) {
                 return b;

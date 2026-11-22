@@ -1,7 +1,6 @@
 package com.mindbridgex.assessment.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +11,7 @@ public class SubjectForm {
     @Size(max = 120)
     private String name;
     @NotBlank(message = "Subject code is required")
-    @Pattern(regexp = "^[A-Za-z0-9._-]{2,40}$", message = "Code: 2-40 letters, digits, dot, underscore or dash")
+    @Size(max = 40, message = "Subject code can be at most 40 characters")
     private String code;
     private boolean active = true;
     private Set<Long> teacherIds = new HashSet<>();
