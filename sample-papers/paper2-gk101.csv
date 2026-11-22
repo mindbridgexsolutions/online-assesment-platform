@@ -1,0 +1,7 @@
+subject_code,type,question,options,correct,marks,co,bloom,difficulty,unit
+GK101,MCQ_SINGLE,Which river is the longest in India?,Ganga|Yamuna|Godavari|Narmada,1,1,CO1,Remember,Easy,Unit 1
+GK101,MCQ_SINGLE,What is the capital of Karnataka?,Chennai|Bengaluru|Hyderabad|Kochi,2,1,CO1,Remember,Easy,Unit 1
+GK101,MCQ_SINGLE,Who wrote the national anthem of India?,Rabindranath Tagore|Bankim Chandra Chatterjee|Muhammad Iqbal|Jawaharlal Nehru,1,1,CO1,Remember,Easy,Unit 3
+GK101,MCQ_SINGLE,How many states does India have?,26|28|29|30,2,1,CO1,Remember,Medium,Unit 3
+GK101,MCQ_SINGLE,Which planet is called the Red Planet?,Venus|Mars|Jupiter|Saturn,2,1,CO2,Understand,Easy,Unit 4
+GK101,ESSAY,Explain the monsoon in about 200 words (an essay row is rejected on purpose),,,5,CO2,Understand,Hard,Unit 4

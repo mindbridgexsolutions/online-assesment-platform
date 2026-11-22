@@ -1,0 +1,14 @@
+target/
+data/
+*.log
+.env
+.idea/
+*.iml
+.vscode/
+
+# build artifacts / archives
+*.war
+*.cpgz
+/assessment/
+/version2/
+ziNC3AJM

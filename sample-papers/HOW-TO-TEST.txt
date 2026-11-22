@@ -1,0 +1,16 @@
+HOW TO TEST THE QUESTION PAPERS FEATURE (local)
+Login: teacher1 / Demo@12345  (subject GK101; SEED_DEMO=true gives this user)
+
+1. Question papers > Upload: subject GK101, file paper1-gk101.docx
+   Expect: 6 rows = 4 Valid, 1 Failed (row 5, no correct answer), and the picture question (row 6) shows its picture. Row 3 is a multiple-answer question (A,C).
+   Nothing is in Question bank yet (check Question bank for 'longest river').
+2. Click Edit on row 5, set the correct option (A or B), Save. Failed becomes Valid (5 valid).
+3. Upload paper2-gk101.csv (subject GK101).
+   Expect: 3 Valid, 2 Duplicate (river, Karnataka: shown as skipped when merged), 1 Failed (the essay row).
+4. Question papers list: tick paper1 and paper2, type a name, 'Merge selected papers'.
+   Expect: new merged paper with all rows; the repeated questions are Duplicates (skipped). Edit any row if you like.
+5. 'Download as Word' on the merged paper, edit the table in Word (change a question text, delete a row, add a row), save it, then 'Replace from Word' on the same paper.
+   Expect: the paper now shows your Word edits, pictures kept.
+6. 'Merge into Question Bank' on the merged paper.
+   Expect: the valid questions appear in Question bank; the paper shows 'Merged into bank' and becomes read-only.
+7. Question bank > Import / export > 'Upload a question paper' also creates a paper (same flow).

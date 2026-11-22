@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/assessment_test}
+    username: ${TEST_DB_USERNAME:assess}
+    password: ${TEST_DB_PASSWORD:assess_pw}
+app:
+  approval-required: false
+  jwt:
+    secret: test-only-secret-0123456789-abcdefghijklmnopqrstuvwxyz-ABCDEFGH
+  cookie:
+    secure: false
+  seed:
+    admin-password: Admin@12345
+    demo-data: false
+  storage:
+    dir: target/test-uploads
+logging:
+  level:
+    root: WARN

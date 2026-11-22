@@ -1,0 +1,26 @@
+# Local development profile: java -jar assessment.war --spring.profiles.active=dev
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/assessment}
+    username: ${DB_USERNAME:assess}
+    password: ${DB_PASSWORD:assess_pw}
+
+server:
+  servlet:
+    jsp:
+      init-parameters:
+        development: true
+
+logging:
+  level:
+    com.mindbridgex: DEBUG
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:dev-only-secret-change-me-0123456789-abcdefghijklmnopqrstuvwxyz}
+  cookie:
+    secure: false
+  seed:
+    admin-password: ${ADMIN_PASSWORD:Admin@12345}
+    super-password: ${SUPERADMIN_PASSWORD:SuperAdmin@12345}
+    demo-data: ${SEED_DEMO:true}

@@ -1,0 +1,70 @@
+# Production stack for ONE server: database + app + HTTPS proxy (Caddy gets and renews the certificate by itself).
+# Run from this folder:  docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+name: assess
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: assessment
+      POSTGRES_USER: ${DB_USERNAME:-assess}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d assessment"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 1g
+    # no "ports": the database is reachable only from the app container, never from the internet
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/assessment
+      DB_USERNAME: ${DB_USERNAME:-assess}
+      DB_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:?set APP_JWT_SECRET in .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-superadmin}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-superadmin@example.com}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:?set SUPERADMIN_PASSWORD in .env}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      COOKIE_SECURE: "true"
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Kolkata}
+      JAVA_OPTS: "-Xms256m -Xmx1200m"
+    volumes:
+      - uploads:/data/uploads
+    mem_limit: 2g
+    # no "ports": only the proxy below talks to the app
+
+  proxy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      ASSESS_DOMAIN: ${ASSESS_DOMAIN:?set ASSESS_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    mem_limit: 256m
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

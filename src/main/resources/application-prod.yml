@@ -1,0 +1,6 @@
+# Production profile: secrets are never defaulted. Startup fails fast if they are missing.
+logging:
+  level:
+    root: WARN
+    com.mindbridgex: INFO
+    org.springframework.security: WARN

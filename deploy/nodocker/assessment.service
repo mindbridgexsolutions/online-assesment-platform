@@ -1,0 +1,21 @@
+[Unit]
+Description=MindBridgeX Online Assessment Platform
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=assess
+Group=assess
+WorkingDirectory=/opt/assessment
+EnvironmentFile=/etc/assessment/assessment.env
+ExecStart=/usr/bin/java -Xms256m -Xmx1200m -Duser.timezone=UTC -jar /opt/assessment/app.war
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+# basic hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
